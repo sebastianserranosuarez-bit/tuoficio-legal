@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Guarda este negocio en Tu Oficio</title>
+  <style>
+    :root { --primary: #4A3FC4; --ink: #211E42; --muted: #6A66A0; --bg: #F5F4FF; --border: #E4E1FA; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); }
+    main { max-width: 440px; margin: 0 auto; padding: 24px 16px 40px; }
+    .brand { font-size: 18px; font-weight: 700; color: var(--primary); margin: 0 0 20px; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
+    h1 { font-size: 22px; line-height: 1.25; margin: 0 0 8px; }
+    p { margin: 0 0 12px; line-height: 1.45; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .code-label { font-size: 13px; color: var(--muted); margin: 16px 0 4px; }
+    .code { font-size: 34px; font-weight: 700; letter-spacing: 6px; color: var(--primary); text-align: center; background: #4A3FC40D; border: 1px dashed var(--primary); border-radius: 12px; padding: 12px 8px; user-select: all; -webkit-user-select: all; }
+    .btn { display: block; text-align: center; text-decoration: none; font-size: 16px; font-weight: 700; min-height: 48px; line-height: 48px; border-radius: 12px; margin-top: 12px; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-secondary { border: 1.5px solid var(--primary); color: var(--primary); background: #fff; }
+    ol { margin: 16px 0 0; padding-left: 20px; }
+    li { margin-bottom: 8px; line-height: 1.4; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="brand">Tu Oficio</p>
+
+    <section class="card" id="valid" hidden>
+      <h1>Guarda este negocio en tus Favoritos</h1>
+      <p class="muted">Un negocio de Tu Oficio te compartió este enlace para que lo encuentres rápido y le pidas cotización cuando quieras.</p>
+
+      <p class="code-label">Código del negocio</p>
+      <div class="code" id="code"></div>
+
+      <a class="btn btn-primary" id="open-app" href="#">Abrir en Tu Oficio</a>
+      <a class="btn btn-secondary" id="download-app" href="#" hidden>Descargar la app</a>
+
+      <ol>
+        <li><strong>Si ya tienes la app:</strong> toca «Abrir en Tu Oficio».</li>
+        <li><strong>Si no la tienes:</strong> descárgala, crea tu cuenta y vuelve a tocar «Abrir en Tu Oficio» (o escanea el QR otra vez).</li>
+        <li><strong>Si «Abrir» no funciona</strong> (por ejemplo, dentro de WhatsApp): abre la app, entra a <em>Favoritos</em> y escribe el código de arriba.</li>
+      </ol>
+    </section>
+
+    <section class="card" id="invalid" hidden>
+      <h1>Este enlace no es válido</h1>
+      <p>No encontramos el código del negocio en este enlace. Pídele al negocio que te muestre su QR otra vez o que te diga su código: lo escribes en la app, en la pestaña <em>Favoritos</em>.</p>
+    </section>
+
+    <noscript>
+      <section class="card">
+        <h1>Activa JavaScript</h1>
+        <p>Esta página necesita JavaScript para abrir la app. También puedes abrir Tu Oficio, entrar a <em>Favoritos</em> y escribir el código que te dio el negocio.</p>
+      </section>
+    </noscript>
+  </main>
+
+  <script>
+    // Dirección donde se descarga la app. Vacía = no se muestra el botón "Descargar la app".
+    // Es http(s) a propósito (ver bridge.js): cámbiala aquí cuando cambie el lugar de descarga.
+    window.TUOFICIO_BRIDGE_CONFIG = { downloadUrl: "" };
+  </script>
+  <script src="bridge.js"></script>
+  <script>
+    (function () {
+      var result = window.TuOficioBridge.buildBridge(window.location.search, window.TUOFICIO_BRIDGE_CONFIG);
+      if (!result.valid) {
+        document.getElementById("invalid").hidden = false;
+        return;
+      }
+      // Solo textContent y href armados por bridge.js a partir de datos ya validados.
+      document.getElementById("code").textContent = result.code;
+      document.getElementById("open-app").setAttribute("href", result.openUrl);
+      if (result.downloadUrl) {
+        var download = document.getElementById("download-app");
+        download.setAttribute("href", result.downloadUrl);
+        download.hidden = false;
+      }
+      document.getElementById("valid").hidden = false;
+    })();
+  </script>
+</body>
+</html>
